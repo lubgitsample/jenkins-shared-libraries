@@ -1,0 +1,34 @@
+@Library("shared") _
+pipeline {
+    agent {label "captain"}
+
+    stages {
+        stage('Code') {
+            steps {
+                script{
+                     clone("https://github.com/lubgitsample/flask-web-app.git", "main")
+                }
+            }
+        }
+        stage('Build') {
+            steps {
+                script{
+                    docker_build("flask-web-app","latest","lubnadocker") 
+                }
+            }
+        }
+        stage('Push') {
+            steps {
+                script{
+                    docker_push("flask-web-app","latest","lubnadocker") 
+                }
+            }
+        }
+        stage('Deploy') {
+            steps {
+                echo 'This is deploying the code'
+                sh "docker compose up -d"
+            }
+        }
+    }
+}
